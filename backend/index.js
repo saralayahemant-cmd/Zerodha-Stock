@@ -410,7 +410,7 @@ const PORT=process.env.PORT || 3002;
 const uri=process.env.MONGO_URL;
 
 
-app.listen(3002,()=>{
+app.listen(PORT,'0.0.0.0',()=>{
   console.log(`http://localhost:${PORT}`);
   mongoose.connect(uri);
 })
