@@ -1,0 +1,12 @@
+#sell-window .btn-red {
+  background: #df514c;
+}
+
+#sell-window .btn-red:hover {
+  background: #c63e39;
+}
+
+#sell-window .btn-red:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
