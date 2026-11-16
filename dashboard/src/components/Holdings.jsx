@@ -1,12 +1,13 @@
 import { useState,useEffect } from "react";
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
+import { API_BASE_URL } from "../config";
 
 const Holdings = () => {
   let [holdingsData,setholdingsData]=useState([]);
 
   useEffect(()=>{
-    axios.get("http://localhost:3002/allHoldings", { withCredentials: true }).then((res)=>{
+    axios.get(`${API_BASE_URL}/allHoldings`, { withCredentials: true }).then((res)=>{
       setholdingsData(res.data);
     })
   },[])

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 import GeneralContext from "./GeneralContext";
+import { API_BASE_URL } from "../config";
 
 import "./BuyActionWindow.css";
 import "./SellActionWindow.css";
@@ -18,7 +19,7 @@ const SellActionWindow = ({ uid }) => {
     let isCurrent = true;
 
     axios
-      .get("http://localhost:3002/allHoldings", { withCredentials: true })
+      .get(`${API_BASE_URL}/allHoldings`, { withCredentials: true })
       .then((response) => {
         const holding = response.data.find((item) => item.name === uid);
         if (isCurrent) {
@@ -40,7 +41,7 @@ const SellActionWindow = ({ uid }) => {
     setError("");
     setIsSubmitting(true);
     try {
-      await axios.post("http://localhost:3002/newOrder", {
+      await axios.post(`${API_BASE_URL}/newOrder`, {
         name: uid,
         qty: stockQuantity,
         price: stockPrice,

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL, FRONTEND_URL } from "../config";
 
 const Menu = () => {
   let [selectedMenu,setSelectedMenu]=useState(0);
@@ -16,8 +17,8 @@ const Menu = () => {
     setLogoutError("");
 
     try {
-      await axios.post("http://localhost:3002/logout", {}, { withCredentials: true });
-      window.location.assign("http://localhost:5173/login");
+      await axios.post(`${API_BASE_URL}/logout`, {}, { withCredentials: true });
+      window.location.assign(`${FRONTEND_URL}/login`);
     } catch {
       setLogoutError("Unable to log out. Please try again.");
       setIsLoggingOut(false);

@@ -3,23 +3,24 @@ import axios from "axios";
 
 import Dashboard from "./Dashboard";
 import TopBar from "./TopBar";
+import { API_BASE_URL, FRONTEND_URL } from "../config";
 
 const Home = () => {
   const [authStatus, setAuthStatus] = useState("checking");
 
   useEffect(() => {
     axios
-      .get("http://localhost:3002/verify", { withCredentials: true })
+      .get(`${API_BASE_URL}/verify`, { withCredentials: true })
       .then((response) => {
         if (response.data.authenticated) {
           setAuthStatus("authenticated");
           return;
         }
-        window.location.assign("http://localhost:5173/login");
+        window.location.assign(`${FRONTEND_URL}/login`);
       })
       .catch((error) => {
         if (error.response?.status === 401) {
-          window.location.assign("http://localhost:5173/login");
+          window.location.assign(`${FRONTEND_URL}/login`);
           return;
         }
         setAuthStatus("error");

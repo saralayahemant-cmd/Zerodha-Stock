@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import { useState,useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 
 const Orders = () => {
   const [myOrders,setMyOrders]=useState([]);
 
   useEffect(()=>{
-    axios.get("http://localhost:3002/myOrders", { withCredentials: true }).then((res)=>{
+    axios.get(`${API_BASE_URL}/myOrders`, { withCredentials: true }).then((res)=>{
       setMyOrders(res.data);
     })
   }, [])

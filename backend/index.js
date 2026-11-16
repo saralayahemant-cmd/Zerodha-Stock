@@ -9,13 +9,28 @@ const cookieParser = require("cookie-parser");
 const { UserModel } = require("./model/UserModel");
 
 const app=express();
+const isProduction = process.env.NODE_ENV === "production";
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.DASHBOARD_URL,
+  ...(isProduction ? [] : ["http://localhost:5173", "http://localhost:5174"]),
+].filter(Boolean);
+const authCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 
 
@@ -184,9 +199,7 @@ app.post("/signup", async (req, res) => {
     await newUser.save();
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      ...authCookieOptions,
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
@@ -251,9 +264,7 @@ app.post("/login", async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      ...authCookieOptions,
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
@@ -297,11 +308,7 @@ app.get("/verify", async (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
+  res.clearCookie("token", authCookieOptions);
 
   return res.json({ message: "Logged out successfully" });
 });
@@ -409,8 +416,18 @@ app.get("/myOrders",authenticateToken ,async (req,res)=>{
 const PORT=process.env.PORT || 3002;
 const uri=process.env.MONGO_URL;
 
+if (!uri) {
+  throw new Error("MONGO_URL must be configured before starting the backend.");
+}
 
-app.listen(PORT,'0.0.0.0',()=>{
-  console.log(`http://localhost:${PORT}`);
-  mongoose.connect(uri);
-})
+mongoose
+  .connect(uri)
+  .then(() => {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`API listening on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("MongoDB connection failed:", error);
+    process.exit(1);
+  });
